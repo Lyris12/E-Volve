@@ -1,14 +1,16 @@
 --coded by Lyris
 --Not yet finalized values
 --Custom constants
-TYPE_EVOLVE				= 0x100000000
-TYPE_CUSTOM				= TYPE_CUSTOM|TYPE_EVOLVE
-CTYPE_EVOLVE			= 0x1000
-CTYPE_CUSTOM			= CTYPE_CUSTOM|CTYPE_EVOLVE
+EFFECT_EXTRA_EVOLVE_MATERIAL		= 525
+EFFECT_CANNOT_BE_EVOLVE_MATERIAL	= 526
+TYPE_EVOLVE							= 0x100000000
+TYPE_CUSTOM							= TYPE_CUSTOM|TYPE_EVOLVE
+CTYPE_EVOLVE						= 0x1000
+CTYPE_CUSTOM						= CTYPE_CUSTOM|CTYPE_EVOLVE
 
-SUMMON_TYPE_EVOLVE	= SUMMON_TYPE_SPECIAL+
+SUMMON_TYPE_EVOLVE					= SUMMON_TYPE_SPECIAL+
 
-REASON_EVOLVE			= 0x20000000
+REASON_EVOLVE						= 0x20000000
 
 --Custom Type Table
 Auxiliary.Evolves = {} --number as index = card, card as index = function() is_fusion
@@ -55,10 +57,10 @@ Card.IsRankBelow=function(c, rk)
 end
 
 --Custom Functions
-function Card.IsCanBeEvolveMaterial(c,ec)
+function Card.IsCanBeEvolveMaterial(c, ec)
 	if not (c:IsControler(ec:GetControler()) and c:IsLocation(LOCATION_MZONE)) then
-		local tef1={c:IsHasEffect(EFFECT_EXTRA_EVOLVE_MATERIAL,tp)}
-		local tef1alt={ec:IsHasEffect(EFFECT_EXTRA_EVOLVE_MATERIAL,tp)}
+		local tef1={c:IsHasEffect(EFFECT_EXTRA_EVOLVE_MATERIAL, tp)}
+		local tef1alt={ec:IsHasEffect(EFFECT_EXTRA_EVOLVE_MATERIAL, tp)}
 		local ValidSubstitute=false
 		for _,te1 in ipairs(tef1) do
 			local con=te1:GetCondition()

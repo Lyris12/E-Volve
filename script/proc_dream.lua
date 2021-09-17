@@ -5,33 +5,25 @@ ATTRIBUTE_DREAM	= 0x80
 
 Auxiliary.DreamAttributes = {} --number as index = card, card as index = function() is_fusion
 
-local get_orig_attribute, get_attribute, get_fus_attribute, is_attribute, is_fus_attribute =
-	Card.GetOriginalAttribute, Card.GetAttribute, Card.GetFusionAttribute, Card.IsAttribute, Card.IsFusionAttribute
-
-Card.GetOriginalAttribute=function(tc)
-	if tc==c then return f1(tc)&0x7f-() else return f1(tc) end
+local f1, f2, f3 = Card.GetOriginalAttribute, Card.GetAttribute, Card.IsAttribute
+Card.GetOriginalAttribute=function(c)
+	if Auxiliary.DreamAttributes[c] then return Auxiliary.DreamAttributes[c]() and f1(c)|ATTRIBUTE_DREAM or ATTRIBUTE_DREAM else return f1(c) end
 end
-Card.GetAttribute=function(tc)
-	if tc==c then
-		if f2(tc)==f1(tc) and (tc:IsHasEffect(EFFECT_ADD_ATTRIBUTE) or tc:IsHasEffect(EFFECT_CHANGE_ATTRIBUTE)) then
-			return f2(tc)
+Card.GetAttribute=function(c, sc, st, p)
+	if Auxiliary.DreamAttributes[c] then
+		if f2(c, sc, st, p)==f1(c, sc, st, p) and (c:IsHasEffect(EFFECT_ADD_ATTRIBUTE) or c:IsHasEffect(EFFECT_CHANGE_ATTRIBUTE)) then
+			return f2(c, sc, st, p)|ATTRIBUTE_DREAM
 		else
-			return f1(tc)
+			return c:GetOriginalAttribute(sc, st, p)|ATTRIBUTE_DREAM
 		end
-	else return f2(tc) end
+	else return f2(c, sc, st, p) end
 end
-Card.GetFusionAttribute=function(tc, p)
-	if tc==c then
-		if f2(tc)==f1(tc) and (tc:IsHasEffect(EFFECT_CHANGE_FUSION_ATTRIBUTE) or tc:IsHasEffect(EFFECT_ADD_FUSION_ATTRIBUTE)) then
-			return f3(tc,p)
-		else return f2(tc) end
-	else return f3(tc,p) end
+Card.IsAttribute=function(c, catt, sc, st, p)
+	if Auxiliary.DreamAttributes[c] then return c:GetAttribute(sc, st, p)&catt==catt else return f3(c, catt, sc, st, p) end
 end
-Card.IsAttribute=function(tc, catt)
-	if tc==c then return f2(tc)&catt==catt else return f4(tc,catt) end
-end
-Card.IsFusionAttribute=function(tc, catt, p)
-	if tc==c then return f3(tc,p)&catt==catt else return f5(tc,catt,p) end
-end
-function Auxiliary.EnableDreamAttribute(c, att, add)
+function Auxiliary.EnableDreamAttribute(c, add)
+	table.insert(Auxiliary.DreamAttributes,c)
+	Auxiliary.Customs[c]=true
+	local add=add==nil and false or add
+	Auxiliary.DreamAttributes[c]=function() return add end
 end
