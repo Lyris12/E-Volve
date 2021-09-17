@@ -24,6 +24,7 @@ Card.IsReason=function(c, rs)
 	return c:IsCustomReason(cusrs)
 end
 Card.IsType=function Card.IsType(c, tpe, scard, sumtype, p)
+	if tpe&TYPE_NORMAL==TYPE_NORMAL and c:IsType(TYPE_GEMINI) and not c:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) then return true end
 	local custpe=tpe>>32
 	local otpe=tpe&0xffffffff
 	--fix for changing type in deck
