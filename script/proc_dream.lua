@@ -14,7 +14,7 @@ Card.GetAttribute=function(c, sc, st, p)
 		if f2(c, sc, st, p)==f1(c, sc, st, p) and (c:IsHasEffect(EFFECT_ADD_ATTRIBUTE) or c:IsHasEffect(EFFECT_CHANGE_ATTRIBUTE)) then
 			return f2(c, sc, st, p)|ATTRIBUTE_DREAM
 		else
-			return c:GetOriginalAttribute(sc, st, p)|ATTRIBUTE_DREAM
+			return f1(c)|ATTRIBUTE_DREAM
 		end
 	else return f2(c, sc, st, p) end
 end
@@ -36,11 +36,11 @@ local e1=Effect.GlobalEffect()
 e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 e1:SetCode(EVENT_STARTUP)
 e1:SetOperation(function(e)
-	for tc in aux.Next(Duel.GetMatchingGroup(Card.IsCode, 0, 0xff, 0xff, nil, table.unpack(xDreams))) do
-		aux.EnableDreamAttribute(tc,not tc:IsCode(97811903))
+	for tc in Auxiliary.Next(Duel.GetMatchingGroup(Card.IsCode, 0, 0xff, 0xff, nil, table.unpack(xDreams))) do
+		Auxiliary.EnableDreamAttribute(tc,not tc:IsCode(97811903))
 	end
-	for tc in aux.Next(Duel.GetMatchingGroup(aux.OR(filter, Card.IsSetCard), 0, 0xff, 0xff, nil, table.unpack(xDreamSetCs))) do
-		aux.EnableDreamAttribute(c, true)
+	for tc in Auxiliary.Next(Duel.GetMatchingGroup(Auxiliary.OR(filter, Card.IsSetCard), 0, 0xff, 0xff, nil, table.unpack(xDreamSetCs))) do
+		Auxiliary.EnableDreamAttribute(c, true)
 	end
 end)
 Duel.RegisterEffect(e1, 0)

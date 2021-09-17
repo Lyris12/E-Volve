@@ -3,20 +3,20 @@
 --Custom constants
 EFFECT_EXTRA_EVOLVE_MATERIAL		= 525
 EFFECT_CANNOT_BE_EVOLVE_MATERIAL	= 526
-TYPE_EVOLVE							= 0x100000000
-TYPE_CUSTOM							= TYPE_CUSTOM|TYPE_EVOLVE
-CTYPE_EVOLVE						= 0x1000
-CTYPE_CUSTOM						= CTYPE_CUSTOM|CTYPE_EVOLVE
+TYPE_EVOLVE								= 0x100000000
+TYPE_CUSTOM								= TYPE_CUSTOM|TYPE_EVOLVE
+CTYPE_EVOLVE							= 0x1000
+CTYPE_CUSTOM							= CTYPE_CUSTOM|CTYPE_EVOLVE
 
-SUMMON_TYPE_EVOLVE					= SUMMON_TYPE_SPECIAL+
+SUMMON_TYPE_EVOLVE					= SUMMON_TYPE_SPECIAL+525
 
-REASON_EVOLVE						= 0x20000000
+REASON_EVOLVE							= 0x20000000
 
 --Custom Type Table
 Auxiliary.Evolves = {} --number as index = card, card as index = function() is_fusion
 
 --overwrite constants
-TYPE_EXTRA	= TYPE_EXTRA|TYPE_EVOLVE
+TYPE_EXTRA							= TYPE_EXTRA|TYPE_EVOLVE
 
 --overwrite functions
 local getType, getOrigType, getPrevTypeField, isRankBelow = Card.GetType, Card.GetOriginalType, Card.GetPreviousTypeOnField, Card.IsRankBelow
@@ -90,8 +90,27 @@ function Auxiliary.AddOrigEvolveType(c,isxyz)
 	local isxyz=isxyz==nil and false or isxyz
 	Auxiliary.Evolves[c]=function() return isxyz end
 end
-function Auxiliary.AddEvolveProc(c, mname, econ)
+function Auxiliary.AddEvolveProc(c, mcode, econ)
 	if c:IsStatus(STATUS_COPYING_EFFECT) then return end
 	local mt=c:GetMetatable()
-	mt.material = mname
+	mt.material = mcode
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_SPSUMMON_PROC)
+	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetRange(LOCATION_EXTRA)
+	e2:SetCondition(Auxiliary.EvolveCondition(mcode,econ)
+	e2:SetTarget(Auxiliary.EvolveTarget(mcode,econ)
+	e2:SetOperation(Auxiliary.EvolveOperation)
+	e2:SetValue(SUMMON_TYPE_EVOLVE)
+	c:RegisterEffect(e2)
+end
+function Auxiliary.EvoluteCondition(mcode, econ)
+return	function(e,c)
+			if c==nil then return true end
+			if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
+			local tp=c:GetControler()
+			local mg=Duel.GetMatchingGroup(Card.IsCanBeEvolveMaterial,tp,0x11e,0x11e,nil,c)
+			return mg:IsExists(Auxiliary.EvolveMatFilter,1,nil)
+		end
 end
