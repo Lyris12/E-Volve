@@ -105,8 +105,8 @@ function Auxiliary.AddEvolveProc(c, mcode, econ)
 	e2:SetValue(SUMMON_TYPE_EVOLVE)
 	c:RegisterEffect(e2)
 end
-function Auxiliary.EvolveMatFilter(c, tp, mcode, econ)
-	return c:IsCode(mcode) and econ(tp, c)
+function Auxiliary.EvolveMatFilter(c, tp, ec, mcode, econ)
+	return c:IsCode(mcode) and econ(tp, ec, c)
 end
 function Auxiliary.EvoluteCondition(mcode, econ)
 	return	function(e, c)
@@ -114,6 +114,13 @@ function Auxiliary.EvoluteCondition(mcode, econ)
 				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
 				local tp = c:GetControler()
 				local mg = Duel.GetMatchingGroup(Card.IsCanBeEvolveMaterial, tp, 0x11e, 0x11e, nil, c)
-				return mg:IsExists(Auxiliary.EvolveMatFilter, 1, nil, tp, mcode, econ)
+				return mg:IsExists(Auxiliary.EvolveMatFilter, 1, nil, tp, c, mcode, econ)
+			end
+end
+function Auxiliary.EvolveTarget(mcode, econ)
+	return	function(e, tp, eg, ep, ev, re, r, rp, chk, c)
+				local mg = Duel.GetMatchingGroup(Card.IsCanBeEvolveMaterial, tp, 0x11e, 0x11e, nil, c)
+				Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TOGRAVE)
+				local tc=mg:Filter(Auxiliary.EvolveMatFilter, nil, tp, c, mcode, econ):SelectUnselect(tp, false, Duel.IsSummonCancelable(), 1. 1)
 			end
 end
