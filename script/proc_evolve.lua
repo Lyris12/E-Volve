@@ -122,5 +122,15 @@ function Auxiliary.EvolveTarget(mcode, econ)
 				local mg = Duel.GetMatchingGroup(Card.IsCanBeEvolveMaterial, tp, 0x11e, 0x11e, nil, c)
 				Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TOGRAVE)
 				local tc=mg:Filter(Auxiliary.EvolveMatFilter, nil, tp, c, mcode, econ):SelectUnselect(tp, false, Duel.IsSummonCancelable(), 1. 1)
+				if tc then
+					e:SetLabelObject(tc)
+					return true
+				else return false end
 			end
+end
+function Auxiliary.EvolveOperation()
+	local g=e:GetLabelObject()
+	c:SetMaterial(g)
+	Duel.SendtoGrave(g,REASON_MATERIAL+REASON_EVOLVE)
+	g:DeleteGroup()
 end
