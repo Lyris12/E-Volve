@@ -3,7 +3,7 @@
 local cid,id=GetID()
 function cid.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
+	Synchro.addProcedure(c,nil,1,1,Synchro.NonTuner(nil),1,99)
 	c:EnableReviveLimit()
 	--copy effect
 	local e1=Effect.CreateEffect(c)

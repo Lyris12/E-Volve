@@ -4,7 +4,7 @@ local cid,id=GetID()
 function cid.initial_effect(c)
 	--fusion summon
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep2(c,cid.ffilter,2,2,true)
+	Fusion.AddProcFunRep(c,cid.ffilter,2,true)
 	--change atk
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
