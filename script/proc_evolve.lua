@@ -13,7 +13,7 @@ SUMMON_TYPE_EVOLVE						= SUMMON_TYPE_SPECIAL+525
 REASON_EVOLVE							= 0x20000000
 
 --Custom Type Table
-Auxiliary.Evolves						= {} --number as index = card, card as index = function() is_fusion
+Auxiliary.Evolves						= {} --number as index = card, card as index = function() is_xyz
 
 --overwrite constants
 TYPE_EXTRA							= TYPE_EXTRA | TYPE_EVOLVE
@@ -106,9 +106,9 @@ function Auxiliary.AddEvolveProc(c, mcode, econ)
 	c:RegisterEffect(e2)
 end
 function Auxiliary.EvolveMatFilter(c, tp, ec, mcode, econ)
-	return c:IsCode(mcode) and econ(tp, ec, c)
+	return c:IsCode(mcode) and econ(tp, ec, c) and Duel.GetMZoneCount(tp, c, tp, LOCATION_REASON_TOFIELD, 2^c:GetSequence())>0
 end
-function Auxiliary.EvoluteCondition(mcode, econ)
+function Auxiliary.EvolveCondition(mcode, econ)
 	return	function(e, c)
 				if c == nil then return true end
 				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
@@ -128,9 +128,14 @@ function Auxiliary.EvolveTarget(mcode, econ)
 				else return false end
 			end
 end
-function Auxiliary.EvolveOperation()
-	local g=e:GetLabelObject()
-	c:SetMaterial(g)
-	Duel.SendtoGrave(g,REASON_MATERIAL+REASON_EVOLVE)
-	g:DeleteGroup()
+function Auxiliary.EvolveOperation(e, tp, eg, ep, ev, re, r, rp, c)
+	local tc=e:GetLabelObject()
+	c:SetMaterial(Group.FromCards(tc))
+	Duel.SendtoGrave(tc,REASON_MATERIAL+REASON_EVOLVE)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_FORCE_MZONE)
+	e1:SetValue(2^tc:GetPreviousSequence())
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
+	c:RegisterEffect(e1)
 end
