@@ -1,23 +1,22 @@
-TYPE_CUSTOM			= 0
-CTYPE_CUSTOM		= 0
+TYPE_CUSTOM			 = 0
+CTYPE_CUSTOM		 = 0
 --overwrite constants
-TYPE_EXTRA			= TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK
-REASON_EXTRA		= REASON_FUSION+REASON_SYNCHRO+REASON_XYZ+REASON_LINK
+REASON_EXTRA		 = REASON_FUSION+REASON_SYNCHRO+REASON_XYZ+REASON_LINK
 --Custom Type Tables
 Auxiliary.Customs = {} --check if card uses custom type, indexing card
 --Custom Functions
 function Card.IsCustomReason(c, rs)
-	return (c:GetReason() >> 32) & rs > 0
+	return (c:GetReason()  >> 32) & rs > 0
 end
 function Card.IsCustomType(c, tpe, scard, sumtype, p)
-	return (c:GetType(scard, sumtype, p) >> 32) & tpe > 0
+	return (c:GetType(scard, sumtype, p)  >> 32) & tpe > 0
 end
 --overwrite functions
 local isReason, getType, isType = Card.IsReason, Card.GetType, Card.IsType
 Duel.LoadScript("proc_dream.lua")
 Duel.LoadScript("proc_evolve.lua")
 Card.IsReason = function(c, rs)
-	local cusrs = rs >> 32
+	local cusrs = rs  >> 32
 	local ors = rs & 0xffffffff
 	if c:GetReason() & ors > 0 then return true end
 	if cusrs <= 0 then return false end
@@ -31,7 +30,7 @@ Card.GetType = function(c, scard, sumtype, p)
 	return tpe
 end
 Card.IsType = function Card.IsType(c, tpe, scard, sumtype, p)
-	local custpe = tpe >> 32
+	local custpe = tpe  >> 32
 	local otpe = tpe & 0xffffffff
 	--fix for changing type in deck
 	if c:IsLocation(LOCATION_DECK) and c:IsHasEffect(EFFECT_ADD_TYPE) and not scard and not sumtype and not p then

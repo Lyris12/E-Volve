@@ -1,7 +1,7 @@
 --coded by Lyris
 --Not yet finalized values
 --Custom constants
-ATTRIBUTE_DREAM	= 0x80
+ATTRIBUTE_DREAM	 = 0x80
 
 Auxiliary.DreamAttributes = {} --number as index = card, card as index = function() is_fusion
 

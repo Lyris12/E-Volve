@@ -3,10 +3,10 @@
 --Custom constants
 EFFECT_EXTRA_EVOLVE_MATERIAL			= 525
 EFFECT_CANNOT_BE_EVOLVE_MATERIAL		= 526
+EFFECT_IGNORE_EVOLVE_CONDITION			= 527
+EFFECT_CHANGE_EVOLVE_CONDITION			= 528
 TYPE_EVOLVE								= 0x100000000
 TYPE_CUSTOM								= TYPE_CUSTOM | TYPE_EVOLVE
-CTYPE_EVOLVE							= 0x1000
-CTYPE_CUSTOM							= CTYPE_CUSTOM | CTYPE_EVOLVE
 
 SUMMON_TYPE_EVOLVE						= SUMMON_TYPE_SPECIAL+525
 
@@ -16,7 +16,7 @@ REASON_EVOLVE							= 0x20000000
 Auxiliary.Evolves						= {} --number as index = card, card as index = function() is_xyz
 
 --overwrite constants
-TYPE_EXTRA							= TYPE_EXTRA | TYPE_EVOLVE
+TYPE_EXTRA								= TYPE_EXTRA | TYPE_EVOLVE
 
 --overwrite functions
 local getType, getOrigType, getPrevTypeField, isRankBelow = Card.GetType, Card.GetOriginalType, Card.GetPreviousTypeOnField, Card.IsRankBelow
@@ -106,7 +106,8 @@ function Auxiliary.AddEvolveProc(c, mcode, econ)
 	c:RegisterEffect(e2)
 end
 function Auxiliary.EvolveMatFilter(c, tp, ec, mcode, econ)
-	return c:IsCode(mcode) and econ(tp, ec, c) and Duel.GetMZoneCount(tp, c, tp, LOCATION_REASON_TOFIELD, 2^c:GetSequence())>0
+	local mcon = ec:IsHasEffect(EFFECT_CHANGE_EVOLVE_CONDITION)
+	return c:IsCode(mcode) and (ec:IsHasEffect(EFFECT_IGNORE_EVOLVE_CONDITION) or mcon and mcon(tp, ec, c) or econ(tp, ec, c)) and Duel.GetMZoneCount(tp, c, tp, LOCATION_REASON_TOFIELD, 2 ^ c:GetSequence()) > 0
 end
 function Auxiliary.EvolveCondition(mcode, econ)
 	return	function(e, c)
@@ -121,7 +122,7 @@ function Auxiliary.EvolveTarget(mcode, econ)
 	return	function(e, tp, eg, ep, ev, re, r, rp, chk, c)
 				local mg = Duel.GetMatchingGroup(Card.IsCanBeEvolveMaterial, tp, 0x11e, 0x11e, nil, c)
 				Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TOGRAVE)
-				local tc=mg:Filter(Auxiliary.EvolveMatFilter, nil, tp, c, mcode, econ):SelectUnselect(tp, false, Duel.IsSummonCancelable(), 1. 1)
+				local tc = mg:Filter(Auxiliary.EvolveMatFilter, nil, tp, c, mcode, econ):SelectUnselect(tp, false, Duel.IsSummonCancelable(), 1. 1)
 				if tc then
 					e:SetLabelObject(tc)
 					return true
@@ -129,13 +130,13 @@ function Auxiliary.EvolveTarget(mcode, econ)
 			end
 end
 function Auxiliary.EvolveOperation(e, tp, eg, ep, ev, re, r, rp, c)
-	local tc=e:GetLabelObject()
+	local tc = e:GetLabelObject()
 	c:SetMaterial(Group.FromCards(tc))
-	Duel.SendtoGrave(tc,REASON_MATERIAL+REASON_EVOLVE)
-	local e1=Effect.CreateEffect(e:GetHandler())
+	Duel.SendtoGrave(tc, REASON_MATERIAL+REASON_EVOLVE)
+	local e1 = Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_FORCE_MZONE)
-	e1:SetValue(2^tc:GetPreviousSequence())
+	e1:SetValue(2 ^ tc:GetPreviousSequence())
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
 	c:RegisterEffect(e1)
 end
