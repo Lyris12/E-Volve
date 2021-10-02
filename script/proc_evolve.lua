@@ -8,7 +8,7 @@ EFFECT_CHANGE_EVOLVE_CONDITION			= 528
 TYPE_EVOLVE								= 0x100000000
 TYPE_CUSTOM								= TYPE_CUSTOM | TYPE_EVOLVE
 
-SUMMON_TYPE_EVOLVE						= SUMMON_TYPE_SPECIAL+525
+SUMMON_TYPE_EVOLVE						= 525
 
 REASON_EVOLVE							= 0x20000000
 
@@ -99,8 +99,8 @@ function Auxiliary.AddEvolveProc(c, mcode, econ)
 	e2:SetCode(EFFECT_SPSUMMON_PROC)
 	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
 	e2:SetRange(LOCATION_EXTRA)
-	e2:SetCondition(Auxiliary.EvolveCondition(mcode, econ)
-	e2:SetTarget(Auxiliary.EvolveTarget(mcode, econ)
+	e2:SetCondition(Auxiliary.EvolveCondition(mcode, econ))
+	e2:SetTarget(Auxiliary.EvolveTarget(mcode, econ))
 	e2:SetOperation(Auxiliary.EvolveOperation)
 	e2:SetValue(SUMMON_TYPE_EVOLVE)
 	c:RegisterEffect(e2)
@@ -122,7 +122,7 @@ function Auxiliary.EvolveTarget(mcode, econ)
 	return	function(e, tp, eg, ep, ev, re, r, rp, chk, c)
 				local mg = Duel.GetMatchingGroup(Card.IsCanBeEvolveMaterial, tp, 0x11e, 0x11e, nil, c)
 				Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TOGRAVE)
-				local tc = mg:Filter(Auxiliary.EvolveMatFilter, nil, tp, c, mcode, econ):SelectUnselect(tp, false, Duel.IsSummonCancelable(), 1. 1)
+				local tc = mg:Filter(Auxiliary.EvolveMatFilter, nil, tp, c, mcode, econ):SelectUnselect(tp, false, Duel.IsSummonCancelable(), 1, 1)
 				if tc then
 					e:SetLabelObject(tc)
 					return true
