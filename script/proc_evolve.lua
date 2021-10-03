@@ -139,4 +139,16 @@ function Auxiliary.EvolveOperation(e, tp, eg, ep, ev, re, r, rp, c)
 	e1:SetValue(2 ^ tc:GetPreviousSequence())
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
 	c:RegisterEffect(e1)
+	if Duel.GetMasterRule() == 4 then
+		local e2 = Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_FIELD)
+		e2:SetCode(EFFECT_BECOME_LINKED_ZONE)
+		e2:SetValue(2 ^ tc:GetPreviousSequence())
+		Duel.RegisterEffect(e2, tp)
+		local e3 = Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+		e3:SetCode(EVENT_SPSUMMON)
+		e3:SetOperation(function() e2:Reset() e3:Reset())
+		c:RegisterEffect(e3)
+	end
 end

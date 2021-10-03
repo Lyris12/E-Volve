@@ -19,7 +19,7 @@ function s.filter(c)
 end
 function s.target(e, tp, eg, ep, ev, re, r, rp, chk)
 	if chk == 0 then
-		if e:GetLabel()~=1 then return false end
+		if e:GetLabel() ~= 1 then return false end
 		e:SetLabel(0)
 		return Duel.IsExistingMatchingCard(s.cfilter, tp, LOCATION_GRAVE, 0, 1, nil) and Duel.IsExistingMatchingCard(s.filter, tp, LOCATION_EXTRA, 0, 1, nil)
 	end
